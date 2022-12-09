@@ -45,7 +45,6 @@ def main():
             tweet VARCHAR,
             tweet_id VARCHAR,
             lang VARCHAR,
-            summary AS summary(tweet)
             proctime AS PROCTIME()
         ) WITH (
             'connector' = 'kafka',
@@ -66,25 +65,24 @@ def main():
     tbl.print_schema()
 
     #####################################################################
-    # Define Tumbling Window Aggregate Calculation (Seller Sales Per Minute)
+    # Define Tumbling Window Aggregate Calculation
     #####################################################################
     #   SUM(1) * 0.85 AS cnt
     #   count(*) as cnt
 
     sql = """
         SELECT
-          tweet, tweet_id, lang, summary
-          TUMBLE_END(proctime, INTERVAL '5' SECONDS) AS window_end,
-          SUM(1) * 0.85 AS cnt 
+          tweet, tweet_id, lang,
+          TUMBLE_END(proctime, INTERVAL '5' SECONDS) AS window_end
         FROM sentiment
         GROUP BY
           TUMBLE(proctime, INTERVAL '5' SECONDS),
-          tweet_id
+          tweet, tweet_id, lang
     """
-    logs_tbl = tbl_env.sql_query(sql)
+    sentiment_tbl = tbl_env.sql_query(sql)
 
     print('\nProcess Sink Schema')
-    logs_tbl.print_schema()
+    sentiment_tbl.print_schema()
 
     ###############################################################
     # Create Kafka Sink Table
@@ -94,9 +92,7 @@ def main():
             tweet VARCHAR,
             tweet_id VARCHAR,
             lang VARCHAR,
-            summary VARCHAR,
-            window_end TIMESTAMP(3),
-            cnt BIGINT
+            window_end TIMESTAMP(3)
         ) WITH (
             'connector' = 'kafka',
             'topic' = 'sentiment_output',
@@ -107,9 +103,10 @@ def main():
     tbl_env.execute_sql(sink_ddl)
 
     # write time windowed aggregations to sink table
-    logs_tbl.execute_insert('sentiment_summary').wait()
+    print(sentiment_tbl)
+    sentiment_tbl.execute_insert('sentiment_summary').wait()
 
-    tbl_env.execute('windowed-logs')
+    tbl_env.execute('windowed-sentiment')
 
 
 if __name__ == '__main__':
