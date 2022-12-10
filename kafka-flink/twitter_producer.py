@@ -1,4 +1,3 @@
-import time
 from json import dumps
 
 import tweepy
@@ -32,12 +31,13 @@ class TweetPrinter(tweepy.StreamingClient):
                     data = {'tweet': f'{tweet.text}'}
                     producer.send('sentiment_input', data)
                     # time.sleep(5)
-                    print(lang, '-', tweet.id, '-', tweet)
+                    print('twitter_producer: ', lang, '-', tweet.id, '-', tweet)
             except Exception as err:
                 print(err)
 
 
 # Create a client to the Twitter stream.
 printer = TweetPrinter(BEARER_TOKEN)
+
 # samples 5% of all tweets.
 printer.sample()

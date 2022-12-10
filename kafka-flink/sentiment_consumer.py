@@ -16,22 +16,25 @@ Ref: https://www.mongodb.com/languages/python
 
 
 def get_database():
-    # Create a connection.
+    # Create a connection to the sentiment table..
     client = MongoClient(CONNECTION_STRING)
     return client['sentiment']
 
 
 def store_sentiment():
     db = get_database()
+    # Use the twitter collection on the sentiment table.
     collection = db['twitter']
     var = 1
     while var == 1:
+        # Connect to kafka and listen for messages.
         consumer = KafkaConsumer(bootstrap_servers='localhost:9092', group_id='consumer-1', auto_offset_reset='latest')
         consumer.subscribe(['sentiment_output'])
         for message in consumer:
             data = json.loads(message.value.decode("utf-8").replace("'", '"'))
             data_dict = json.loads(data['tweet'])
-            print(data_dict)
+            print('sentiment_consumer: ', data_dict)
+            # Write to the MongoDB.
             collection.insert_one(data_dict)
 
 
