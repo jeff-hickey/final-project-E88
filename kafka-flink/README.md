@@ -31,6 +31,14 @@ Check services are running:
 
 - $ python3.9 sentiment_consumer.py
 
+### Step 6 - Setup MongoDB
+- Install MongoDB Community edition 
+- Start mongo:
+$ brew services start mongodb-community@6.06.0
+- Connect to the database, create a table and a collection.
+$ use sentiment
+$ db.createCollection('twitter')
+
 ### Step 6 - Start the website
 
 - $ cd /final-project-E88/ $ flask --app application run

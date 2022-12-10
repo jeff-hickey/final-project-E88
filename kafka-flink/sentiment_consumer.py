@@ -31,8 +31,9 @@ def store_sentiment():
         consumer.subscribe(['sentiment_output'])
         for message in consumer:
             data = json.loads(message.value.decode("utf-8").replace("'", '"'))
-            collection.insert_one(data)
-            print(message.value)
+            data_dict = json.loads(data['tweet'])
+            print(data_dict)
+            collection.insert_one(data_dict)
 
 
 if __name__ == "__main__":

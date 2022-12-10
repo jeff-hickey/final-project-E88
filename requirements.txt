@@ -1,4 +1,0 @@
-pymongo
-nltk
-tweepy
-langdetect

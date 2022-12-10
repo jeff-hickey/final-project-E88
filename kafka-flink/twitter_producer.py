@@ -31,7 +31,7 @@ class TweetPrinter(tweepy.StreamingClient):
                     # Send the tweet to kafka for processing.
                     data = {'tweet': f'{tweet.text}'}
                     producer.send('sentiment_input', data)
-                    time.sleep(5)
+                    # time.sleep(5)
                     print(lang, '-', tweet.id, '-', tweet)
             except Exception as err:
                 print(err)
