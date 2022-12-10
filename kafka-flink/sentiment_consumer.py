@@ -5,15 +5,14 @@ from pymongo import MongoClient
 
 CONNECTION_STRING = "mongodb://localhost/"
 
-'''
-
+"""
 The sentiment consumer listens for messages on the sentiment_output queue and processes them into a MongoDB. These
 messages originate from the Flink stream processor and contain sentiment analysis of tweets. 
 
 Ref: https://www.w3schools.com/python/python_mongodb_insert.asp
 Ref: https://www.mongodb.com/languages/python
 
-'''
+"""
 
 
 def get_database():
@@ -37,5 +36,5 @@ def store_sentiment():
 
 
 if __name__ == "__main__":
-    # Read from the sentiment_output kafka queue
+    # Read from the sentiment_output kafka queue.
     store_sentiment()

@@ -12,7 +12,7 @@ producer = KafkaProducer(bootstrap_servers=['localhost:9092'], value_serializer=
 '''
 
 The twitter producer builds a connection to the Twitter data stream using the tweepy StreamingClient. The stream 
-samples 5% of the total twitter data on the stream. These tweets are sent as json documens to the kafka 
+samples 5% of the total twitter data on the stream. These tweets are sent as json documents to the kafka 
 sentiment_input topic for stream processing by Flink. 
 
 Ref: https://docs.tweepy.org/en/stable/streaming.html
@@ -41,10 +41,3 @@ class TweetPrinter(tweepy.StreamingClient):
 printer = TweetPrinter(BEARER_TOKEN)
 # samples 5% of all tweets.
 printer.sample()
-
-'''
-for e in range(1000):
-    data = {'tweet': 'Hello World'}
-    producer.send('sentiment_input', value=data)
-    time.sleep(5)
-'''
