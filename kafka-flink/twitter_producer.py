@@ -1,14 +1,13 @@
+import time
 from json import dumps
-from kafka import KafkaProducer
 
 import tweepy
+from kafka import KafkaProducer
 from langdetect import detect
 
 BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAIuEkAEAAAAAJ%2BtFew1tGw2RXPQxMFT4mVo46%2Fg%3D7OTwF0GcJE6icDPPZtRjgodK0PHUUYmfirrSo8T09svCtSDJIz"
 
-producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
-                         value_serializer=lambda x:
-                         dumps(x).encode('utf-8'))
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'], value_serializer=lambda x: dumps(x).encode('utf-8'))
 
 '''
 
@@ -30,7 +29,9 @@ class TweetPrinter(tweepy.StreamingClient):
                 lang = detect(tweet.text)
                 if lang and lang == 'en':
                     # Send the tweet to kafka for processing.
-                    # producer.send('sentiment_input', value={'tweet_id': tweet.id, 'tweet': tweet, 'lang': lang})
+                    data = {'tweet': f'{tweet.text}'}
+                    producer.send('sentiment_input', data)
+                    time.sleep(5)
                     print(lang, '-', tweet.id, '-', tweet)
             except Exception as err:
                 print(err)
@@ -40,3 +41,10 @@ class TweetPrinter(tweepy.StreamingClient):
 printer = TweetPrinter(BEARER_TOKEN)
 # samples 5% of all tweets.
 printer.sample()
+
+'''
+for e in range(1000):
+    data = {'tweet': 'Hello World'}
+    producer.send('sentiment_input', value=data)
+    time.sleep(5)
+'''

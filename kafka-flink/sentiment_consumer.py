@@ -1,5 +1,7 @@
-from pymongo import MongoClient
+import json
+
 from kafka import KafkaConsumer
+from pymongo import MongoClient
 
 CONNECTION_STRING = "mongodb://localhost/"
 
@@ -28,7 +30,8 @@ def store_sentiment():
         consumer = KafkaConsumer(bootstrap_servers='localhost:9092', group_id='consumer-1', auto_offset_reset='latest')
         consumer.subscribe(['sentiment_output'])
         for message in consumer:
-            # collection.insert_one(message)
+            data = json.loads(message.value.decode("utf-8").replace("'", '"'))
+            collection.insert_one(data)
             print(message.value)
 
 
